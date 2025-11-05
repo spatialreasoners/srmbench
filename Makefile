@@ -1,4 +1,4 @@
-.PHONY: help install install-dev test lint format clean build upload
+.PHONY: help install install-dev test clean build upload
 
 help: ## Show this help message
 	@echo "Available commands:"
@@ -21,14 +21,6 @@ lint: ## Run linting
 	flake8 srmbench tests
 	mypy srmbench
 
-format: ## Format code
-	black srmbench tests
-	isort srmbench tests
-
-format-check: ## Check code formatting
-	black --check srmbench tests
-	isort --check-only srmbench tests
-
 clean: ## Clean build artifacts
 	rm -rf build/
 	rm -rf dist/
@@ -48,8 +40,6 @@ upload-test: build ## Upload to test PyPI
 upload: build ## Upload to PyPI
 	twine upload dist/*
 	
-check: format-check lint test ## Run all checks
-
 ci: ## Run CI pipeline
 	pre-commit run --all-files
 	pytest tests/ --cov=srmbench --cov-report=xml

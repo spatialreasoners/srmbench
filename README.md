@@ -4,20 +4,20 @@ Package with benchmark datasets to see how good is your image generative model a
 ## Installation
 ### From PyPI
 ```bash
-pip install srm-benchmarks
+pip install srmbench
 ```
 
 ### From source
 ```bash
-git clone https://github.com/spatialreasoners/srm-benchmarks.git
-cd srm-benchmarks
+git clone https://github.com/spatialreasoners/srmbench.git
+cd srmbench
 pip install -e .
 ```
 
 ### Development installation
 ```bash
-git clone https://github.com/spatialreasoners/srm-benchmarks.git
-cd srm-benchmarks
+git clone https://github.com/spatialreasoners/srmbench.git
+cd srmbench
 pip install -e ".[dev]"
 ```
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for srm-benchmarks package.
+Setup script for srmbench package.
 This provides backward compatibility for older pip versions.
 """
 
@@ -24,14 +24,14 @@ def read_requirements():
     return []
 
 setup(
-    name="srm-benchmarks",
+    name="srmbench",
     version="0.1.0",
-    author="Bartlomiej Pogodzinski",
+    author="Bartlomiej Pogodzinski, Christopher Wewer, Bernt Schiele, Jan Eric Lenssen",
     author_email="bpogodzi@mpi-inf.mpg.de",
     description="Datasets and evaluation from the Spatial Reasoning with Denoising Models paper",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/spatialreasoners/srm-benchmarks",
+    url="https://github.com/spatialreasoners/srmbench",
     packages=find_packages(include=["srmbench*"]),
     package_data={
         "srmbench": ["*.yaml", "*.yml", "*.json", "*.txt"],
@@ -43,19 +43,9 @@ setup(
         "dev": [
             "pytest>=7.0.0",
             "pytest-cov>=4.0.0",
-            "black>=22.0.0",
-            "isort>=5.10.0",
-            "flake8>=5.0.0",
-            "mypy>=1.0.0",
-            "pre-commit>=2.20.0",
-        ],
-        "docs": [
-            "sphinx>=5.0.0",
-            "sphinx-rtd-theme>=1.0.0",
-            "myst-parser>=0.18.0",
         ],
         "all": [
-            "srm-benchmarks[dev,docs]",
+            "srmbench[dev]",
         ],
     },
     entry_points={

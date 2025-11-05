@@ -12,8 +12,4 @@ safetensors>=0.3.0
 jaxtyping>=0.2.0
 beartype>=0.15.0
 
-# Optional: Additional utilities
-# matplotlib>=3.5.0
-# seaborn>=0.11.0
-# scikit-learn>=1.0.0
-# tqdm>=4.64.0
+matplotlib>=3.5.0

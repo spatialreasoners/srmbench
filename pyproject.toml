@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "srm-benchmarks"
+name = "srmbench"
 version = "0.1.0"
 description = "Datasets and evaluation from the Spatial Reasoning with Denoising Models paper"
 readme = "README.md"
@@ -60,12 +60,12 @@ docs = [
     "myst-parser>=0.18.0",
 ]
 all = [
-    "srm-benchmarks[dev,docs]",
+    "srmbench[dev,docs]",
 ]
 
 [project.urls]
-repository = "https://github.com/spatialreasoners/srm-benchmarks"
-bug_tracker = "https://github.com/spatialreasoners/srm-benchmarks/issues"
+repository = "https://github.com/spatialreasoners/srmbench"
+bug_tracker = "https://github.com/spatialreasoners/srmbench/issues"
 
 [project.scripts]
 srm-bench = "srmbench.cli:main"

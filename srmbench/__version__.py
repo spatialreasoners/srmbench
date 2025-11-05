@@ -1,5 +1,5 @@
 """
-Version information for srm-benchmarks package.
+Version information for srmbench package.
 """
 
 __version__ = "0.1.0"
@@ -10,11 +10,11 @@ VERSION = __version__
 VERSION_INFO = __version_info__
 
 # Package metadata
-PACKAGE_NAME = "srm-benchmarks"
+PACKAGE_NAME = "srmbench"
 AUTHOR = "Bartlomiej Pogodzinski"
 AUTHOR_EMAIL = "bpogodzi@mpi-inf.mpg.de"
 DESCRIPTION = (
     "Datasets and evaluation from the Spatial Reasoning with Denoising Models paper"
 )
-URL = "todo: add URL"
+URL = "https://github.com/spatialreasoners/srmbench"
 LICENSE = "MIT"
