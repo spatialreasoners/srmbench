@@ -37,7 +37,7 @@ setup(
         "srmbench": ["*.yaml", "*.yml", "*.json", "*.txt"],
     },
     include_package_data=True,
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     install_requires=read_requirements(),
     extras_require={
         "dev": [

@@ -200,3 +200,7 @@ logs/
 .coverage
 coverage.xml
 .venv*
+
+# Generated example images
+example_images/
+generate_examples.py
