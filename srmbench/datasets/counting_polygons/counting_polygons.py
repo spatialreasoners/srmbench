@@ -9,9 +9,9 @@ from huggingface_hub import hf_hub_download
 from jaxtyping import Float, Int
 from PIL import Image, ImageDraw
 
+from ..srm_dataset import SRMDataset
 from .font_cache import FontCache
 from .labelers import get_labeler
-from .srm_dataset import SRMDataset
 
 
 class CountingPolygonsBase(SRMDataset, ABC):
@@ -36,13 +36,10 @@ class CountingPolygonsBase(SRMDataset, ABC):
         supersampling_image_size: Sequence[int] = (512, 512),
         min_vertices: int = 3,
         max_vertices: int = 7,
-        font_name: str = "Roboto-Regular.ttf",
         mismatched_numbers: bool = False,
         allow_nonuniform_vertices: bool = False,
         use_stars: bool = False,
         star_radius_ratio: float = 0.1,
-        counting_polygons_classifier_path: str = "",
-        counting_polygons_classifier_model_base: Literal["resnet18", "resnet50"] = "resnet50",
         cache_dir: str | None = None,
     ) -> None:
         super().__init__(stage)
@@ -57,38 +54,24 @@ class CountingPolygonsBase(SRMDataset, ABC):
         self.supersampling_image_size = tuple(supersampling_image_size)
         self.min_vertices = min_vertices
         self.max_vertices = max_vertices
-        self.font_name = font_name
         self.mismatched_numbers = mismatched_numbers
         self.allow_nonuniform_vertices = allow_nonuniform_vertices
         self.use_stars = use_stars
         self.star_radius_ratio = star_radius_ratio
-        self.counting_polygons_classifier_path = counting_polygons_classifier_path
-        self.counting_polygons_classifier_model_base = counting_polygons_classifier_model_base
         self._cache_dir = cache_dir
 
         self.min_circle_num = 3 if self.are_nums_on_images else 1
         self.circle_positions = self._load_circle_positions()
 
-        # Download font from HuggingFace if not found locally
+        # Download font from HuggingFace
         font_path = None
-        if self.root_path and self.font_name:
-            local_font_path = self.root_path / self.font_name
-            if local_font_path.exists():
-                font_path = local_font_path
-        
-        if font_path is None:
-            # Download from HuggingFace
-            try:
-                font_path = self._download_artifact(
-                    self.font_file_name, cache_dir=self._cache_dir
-                )
-            except Exception as e:
-                # Fallback: try to use the font_name if it's a system path
-                if self.font_name:
-                    font_path = Path(self.font_name) if Path(self.font_name).exists() else None
-                if font_path is None:
-                    print(f"Warning: Could not load font from HuggingFace: {e}")
-                    print("Font rendering will use default font.")
+        try:
+            font_path = self._download_artifact(
+                self.font_file_name, cache_dir=self._cache_dir
+            )
+        except Exception as e:
+            print(f"Warning: Could not load font from HuggingFace: {e}")
+            print("Font rendering will use default font.")
 
         if font_path and font_path.exists():
             self.font_cache = FontCache(font_path)

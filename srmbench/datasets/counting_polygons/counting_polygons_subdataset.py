@@ -8,8 +8,8 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision.transforms.v2 import CenterCrop, Compose, Lambda
 
+from ..srm_dataset import SRMDataset
 from .counting_polygons import CountingPolygonsBase
-from .srm_dataset import SRMDataset
 
 
 class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
@@ -25,13 +25,12 @@ class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
         subdataset: SRMDataset,
         stage: str = "train",
         root: str | None = None,
-        image_resolution: tuple[int, int] = (256, 256),
+        image_resolution: tuple[int, int] = (128, 128),
         labeler_name: str | None = None,
         are_nums_on_images: bool = False,
         supersampling_image_size: tuple[int, int] = (512, 512),
         min_vertices: int = 3,
         max_vertices: int = 7,
-        font_name: str = "Roboto-Regular.ttf",
         mismatched_numbers: bool = False,
         allow_nonuniform_vertices: bool = False,
         use_stars: bool = False,
@@ -54,7 +53,6 @@ class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
             supersampling_image_size=supersampling_image_size,
             min_vertices=min_vertices,
             max_vertices=max_vertices,
-            font_name=font_name,
             mismatched_numbers=mismatched_numbers,
             allow_nonuniform_vertices=allow_nonuniform_vertices,
             use_stars=use_stars,

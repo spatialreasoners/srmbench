@@ -8,7 +8,7 @@ from typing import Literal
 from datasets import load_dataset
 from PIL import Image
 
-from .srm_dataset import SRMDataset
+from ..srm_dataset import SRMDataset
 
 
 class FFHQDataset(SRMDataset):
