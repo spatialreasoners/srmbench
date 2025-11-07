@@ -14,7 +14,7 @@ from .font_cache import FontCache
 from .labelers import get_labeler
 
 
-class CountingPolygonsBase(SRMDataset, ABC):
+class CountingObjectsBase(SRMDataset, ABC):
     """
     Base class for counting polygons datasets.
     """
@@ -38,7 +38,7 @@ class CountingPolygonsBase(SRMDataset, ABC):
         max_vertices: int = 7,
         mismatched_numbers: bool = False,
         allow_nonuniform_vertices: bool = False,
-        use_stars: bool = False,
+        object_variant: Literal["stars", "polygons"] = "stars",
         star_radius_ratio: float = 0.1,
         cache_dir: str | None = None,
     ) -> None:
@@ -56,7 +56,7 @@ class CountingPolygonsBase(SRMDataset, ABC):
         self.max_vertices = max_vertices
         self.mismatched_numbers = mismatched_numbers
         self.allow_nonuniform_vertices = allow_nonuniform_vertices
-        self.use_stars = use_stars
+        self.object_variant = object_variant
         self.star_radius_ratio = star_radius_ratio
         self._cache_dir = cache_dir
 
@@ -100,7 +100,7 @@ class CountingPolygonsBase(SRMDataset, ABC):
             ]
         )[np.newaxis, ...]  # shape: (1, 3)
 
-        self._draw_object = self._draw_stars if self.use_stars else self._draw_polygons
+        self._draw_object = self._draw_stars if self.object_variant == "stars" else self._draw_polygons
 
     @abstractmethod
     def _get_base_image(self, base_image_idx: int) -> Image.Image:
@@ -132,12 +132,12 @@ class CountingPolygonsBase(SRMDataset, ABC):
         """
         # Check cache first
         cache_key = (filename, cache_dir)
-        if cache_key in CountingPolygonsBase._artifact_cache:
-            return CountingPolygonsBase._artifact_cache[cache_key]
+        if cache_key in CountingObjectsBase._artifact_cache:
+            return CountingObjectsBase._artifact_cache[cache_key]
         
         # Download from HuggingFace (HuggingFace also has its own caching)
         file_path = hf_hub_download(
-            repo_id=CountingPolygonsBase.artifacts_repository,
+            repo_id=CountingObjectsBase.artifacts_repository,
             filename=filename,
             repo_type="dataset",
             cache_dir=cache_dir,
@@ -145,7 +145,7 @@ class CountingPolygonsBase(SRMDataset, ABC):
         result = Path(file_path)
         
         # Cache the result
-        CountingPolygonsBase._artifact_cache[cache_key] = result
+        CountingObjectsBase._artifact_cache[cache_key] = result
         return result
 
     @property

@@ -7,7 +7,7 @@ from jaxtyping import Int
 from torch import Tensor
 
 
-class DatasetCountingPolygonsLabeler(ABC):
+class DatasetCountingObjectsLabeler(ABC):
     name: Literal["labeler"] = "labeler"
 
     def __init__(self, min_vertices: int, max_vertices: int):
@@ -36,7 +36,7 @@ class DatasetCountingPolygonsLabeler(ABC):
         pass
 
 
-class DatasetCountingPolygonsAmbiguousLabeler(DatasetCountingPolygonsLabeler):
+class DatasetCountingObjectsAmbiguousLabeler(DatasetCountingObjectsLabeler):
     name: Literal["ambiguous"] = "ambiguous"
 
     def __init__(self, *args, **kwargs):
@@ -99,7 +99,7 @@ class DatasetCountingPolygonsAmbiguousLabeler(DatasetCountingPolygonsLabeler):
         return len(self.label_id_to_pair)
 
 
-class DatasetCountingPolygonsExplicitLabeler(DatasetCountingPolygonsLabeler):
+class DatasetCountingObjectsExplicitLabeler(DatasetCountingObjectsLabeler):
     name: Literal["explicit"] = "explicit"
 
     def get_label(self, num_polygons: int, num_vertices: int) -> int:
@@ -136,11 +136,11 @@ class DatasetCountingPolygonsExplicitLabeler(DatasetCountingPolygonsLabeler):
 
 def get_labeler(
     labeler_name: str | None, *args, **kwargs
-) -> DatasetCountingPolygonsLabeler | None:
+) -> DatasetCountingObjectsLabeler | None:
     if labeler_name is None:
         return None
 
-    for labeler in DatasetCountingPolygonsLabeler.__subclasses__():
+    for labeler in DatasetCountingObjectsLabeler.__subclasses__():
         if labeler.name == labeler_name:
             return labeler(*args, **kwargs)
 

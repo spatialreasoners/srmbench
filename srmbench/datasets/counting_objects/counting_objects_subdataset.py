@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from colorsys import hsv_to_rgb
 from functools import lru_cache
+from typing import Literal
 
 import numpy as np
 import torch
@@ -9,12 +10,12 @@ from PIL import Image
 from torchvision.transforms.v2 import CenterCrop, Compose, Lambda
 
 from ..srm_dataset import SRMDataset
-from .counting_polygons import CountingPolygonsBase
+from .counting_objects import CountingObjectsBase
 
 
-class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
+class CountingObjectsSubdataset(CountingObjectsBase, ABC):
     """
-    Subdataset class that merges base images with counting polygons.
+    Subdataset class that merges base images with the objects from Counting Objects dataset.
     """
 
     color_histogram_blur_sigma: float = 26.0
@@ -33,7 +34,7 @@ class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
         max_vertices: int = 7,
         mismatched_numbers: bool = False,
         allow_nonuniform_vertices: bool = False,
-        use_stars: bool = False,
+        object_variant: Literal["stars", "polygons"] = "stars",
         star_radius_ratio: float = 0.1,
         hsv_saturation: float = 1.0,
         hsv_value: float = 0.9,
@@ -55,7 +56,7 @@ class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
             max_vertices=max_vertices,
             mismatched_numbers=mismatched_numbers,
             allow_nonuniform_vertices=allow_nonuniform_vertices,
-            use_stars=use_stars,
+            object_variant=object_variant,
             star_radius_ratio=star_radius_ratio,
             cache_dir=cache_dir,
             **kwargs,
@@ -77,7 +78,9 @@ class CountingPolygonsSubdataset(CountingPolygonsBase, ABC):
         )
 
     @staticmethod
-    def relative_resize(image: Image.Image, target_size: tuple[int, int]) -> Image.Image:
+    def relative_resize(
+        image: Image.Image, target_size: tuple[int, int]
+    ) -> Image.Image:
         """Resize image maintaining aspect ratio."""
         width, height = image.size
         target_width, target_height = target_size

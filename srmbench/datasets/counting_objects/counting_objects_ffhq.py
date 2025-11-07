@@ -3,11 +3,13 @@ Counting Polygons FFHQ Dataset.
 Combines FFHQ background images with counting polygons overlay.
 """
 
-from .counting_polygons_subdataset import CountingPolygonsSubdataset
+from typing import Literal
+
+from .counting_objects_subdataset import CountingObjectsSubdataset
 from .ffhq import FFHQDataset
 
 
-class CountingPolygonsFFHQ(CountingPolygonsSubdataset):
+class CountingObjectsFFHQ(CountingObjectsSubdataset):
     """
     Counting Polygons dataset with FFHQ background images.
     """
@@ -25,7 +27,7 @@ class CountingPolygonsFFHQ(CountingPolygonsSubdataset):
         max_vertices: int = 7,
         mismatched_numbers: bool = False,
         allow_nonuniform_vertices: bool = False,
-        use_stars: bool = False,
+        object_variant: Literal["stars", "polygons"] = "stars",
         star_radius_ratio: float = 0.1,
         hsv_saturation: float = 1.0,
         hsv_value: float = 0.9,
@@ -53,7 +55,7 @@ class CountingPolygonsFFHQ(CountingPolygonsSubdataset):
             max_vertices=max_vertices,
             mismatched_numbers=mismatched_numbers,
             allow_nonuniform_vertices=allow_nonuniform_vertices,
-            use_stars=use_stars,
+            object_variant=object_variant,
             star_radius_ratio=star_radius_ratio,
             hsv_saturation=hsv_saturation,
             hsv_value=hsv_value,

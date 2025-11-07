@@ -1,11 +1,8 @@
 import torch
-import torch.nn
 import torch.nn as nn
-import torch.nn.functional
 import torch.nn.functional as F
-from beartype import beartype
 from huggingface_hub import PyTorchModelHubMixin
-from jaxtyping import Bool, Float, Integer, Shaped
+from jaxtyping import Float, Integer, Shaped
 from torch import Tensor
 
 
