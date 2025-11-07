@@ -53,10 +53,10 @@ class TestMnistSudokuEvaluation:
         with torch.no_grad():
             result = evaluation.evaluate(input_tensor)
 
-        assert "is_accurate" in result
-        assert "distance" in result
-        assert result["is_accurate"].shape == (batch_size,)
-        assert result["distance"].shape == (batch_size,)
+        assert "is_valid_sudoku" in result
+        assert "duplicate_count" in result
+        assert result["is_valid_sudoku"].shape == (batch_size,)
+        assert result["duplicate_count"].shape == (batch_size,)
 
     def test_evaluation_batch_processing(self):
         """Test evaluation batch processing."""
@@ -65,11 +65,11 @@ class TestMnistSudokuEvaluation:
         batch_input = torch.randint(0, 255, (3, 252, 252), dtype=torch.float32)
         batch_result = evaluation.evaluate(batch_input)
 
-        assert batch_result["is_accurate"].shape == (3,)
-        assert (batch_result["is_accurate"] == torch.zeros(3)).all()
+        assert batch_result["is_valid_sudoku"].shape == (3,)
+        assert (batch_result["is_valid_sudoku"] == torch.zeros(3)).all()
         
-        assert batch_result["distance"].shape == (3,)
-        assert (batch_result["distance"] > 0).all()
+        assert batch_result["duplicate_count"].shape == (3,)
+        assert (batch_result["duplicate_count"] > 0).all()
 
 
 class TestEvenPixelsEvaluation:
@@ -98,7 +98,7 @@ class TestEvenPixelsEvaluation:
 
         assert "saturation_std" in result
         assert "value_std" in result
-        assert "hue_uneven_errors" in result
+        assert "color_imbalance_count" in result
         assert "is_color_count_even" in result
 
         # Check that all metrics are scalar tensors
@@ -117,13 +117,13 @@ class TestEvenPixelsEvaluation:
         # All metrics should be scalar (batch-averaged)
         assert batch_result["saturation_std"].shape == ()
         assert batch_result["value_std"].shape == ()
-        assert batch_result["hue_uneven_errors"].shape == ()
+        assert batch_result["color_imbalance_count"].shape == ()
         assert batch_result["is_color_count_even"].shape == ()
 
         # Check that metrics are in expected ranges
         assert 0 <= batch_result["saturation_std"] <= 1
         assert 0 <= batch_result["value_std"] <= 1
-        assert batch_result["hue_uneven_errors"] >= 0
+        assert batch_result["color_imbalance_count"] >= 0
         assert 0 <= batch_result["is_color_count_even"] <= 1
 
     def test_evaluation_with_constant_saturation_value(self):

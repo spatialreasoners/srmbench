@@ -86,9 +86,9 @@ class MnistSudokuEvaluation:
         cnt = torch.full_like(grids, fill_value=-1)
         cnt.scatter_add_(dim=dim, index=grids, src=ones)
         distance.add_(cnt.abs_().sum(dim=(1, 2)))
-        is_accurate = distance == 0
+        is_valid_sudoku = distance == 0
 
-        return {"distance": distance, "is_accurate": is_accurate}
+        return {"duplicate_count": distance, "is_valid_sudoku": is_valid_sudoku}
 
     def evaluate(
         self, samples: Float[Tensor, "batch height width"]

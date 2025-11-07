@@ -66,14 +66,14 @@ class EvenPixelsEvaluation:
 
         hsv = rgb_to_hsv(np_images)
 
-        hue_uneven_errors = self._get_hue_uneven_error_counts(hsv)
-        avg_is_color_count_even = (hue_uneven_errors == 0).mean().item()
-        avg_hue_uneven_errors = hue_uneven_errors.mean().item()
+        color_imbalance_count = self._get_hue_uneven_error_counts(hsv)
+        avg_is_color_count_even = (color_imbalance_count == 0).mean().item()
+        avg_color_imbalance_count = color_imbalance_count.mean().item()
 
         values = {
             "saturation_std": self._get_avg_saturation_std(hsv),
             "value_std": self._get_avg_value_std(hsv),
-            "hue_uneven_errors": avg_hue_uneven_errors,
+            "color_imbalance_count": avg_color_imbalance_count,
             "is_color_count_even": avg_is_color_count_even,
         }
 

@@ -58,10 +58,10 @@ class MnistSudokuTestIntegration:
         # Evaluate
         result = evaluation.evaluate(batch)
 
-        assert "is_accurate" in result
-        assert "distance" in result
-        assert result["is_accurate"].shape == (1,)
-        assert result["distance"].shape == (1,)
+        assert "is_valid_sudoku" in result
+        assert "duplicate_count" in result
+        assert result["is_valid_sudoku"].shape == (1,)
+        assert result["duplicate_count"].shape == (1,)
         
     def test_pipeline_correctness(self):
         """Test that single and batch processing give consistent results."""
@@ -73,10 +73,10 @@ class MnistSudokuTestIntegration:
         
         result = evaluation.evaluate(samples)
 
-        assert result["is_accurate"].shape == (3,)
-        assert result["distance"].shape == (3,)
-        assert (result["is_accurate"] == torch.ones(3)).all()
-        assert (result["distance"] == 0).all()
+        assert result["is_valid_sudoku"].shape == (3,)
+        assert result["duplicate_count"].shape == (3,)
+        assert (result["is_valid_sudoku"] == torch.ones(3)).all()
+        assert (result["duplicate_count"] == 0).all()
 
 
 class EvenPixelsTestIntegration:
@@ -100,7 +100,7 @@ class EvenPixelsTestIntegration:
 
         assert "saturation_std" in result
         assert "value_std" in result
-        assert "hue_uneven_errors" in result
+        assert "color_imbalance_count" in result
         assert "is_color_count_even" in result
 
         # All metrics should be scalar tensors
@@ -128,7 +128,7 @@ class EvenPixelsTestIntegration:
         # - Hue should be evenly split (errors should be 0, color count should be even)
         assert result["saturation_std"] < 0.01, "Saturation should be nearly constant (std < 0.01)"
         assert result["value_std"] < 0.01, "Value should be nearly constant (std < 0.01)"
-        assert result["hue_uneven_errors"] == 0.0, "Hue should be evenly distributed (errors = 0)"
+        assert result["color_imbalance_count"] == 0.0, "Hue should be evenly distributed (color_imbalance_count = 0)"
         assert result["is_color_count_even"] == 1.0, "Color count should be even (1.0)"
 
     def test_batch_processing_consistency(self):
