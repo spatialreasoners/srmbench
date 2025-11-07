@@ -71,12 +71,11 @@ class CountingObjectsClassifier(nn.Module, PyTorchModelHubMixin):
             "num_vertices": selected_labels["num_vertices"] + self.min_vertices,
         }
 
-        if self.are_nums_on_images:
-            outputs["num_polygons_vertices"] = (
-                self.labeler.label_to_num_polygons_vertices(
-                    selected_labels["numbers_label"]
-                )
+        outputs["num_polygons_vertices"] = (
+            self.labeler.label_to_num_polygons_vertices(
+                selected_labels["numbers_label"]
             )
+        )
 
         return outputs, confidences
     

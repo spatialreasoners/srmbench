@@ -9,8 +9,10 @@ from PIL import Image
 
 from srmbench.datasets.even_pixels import EvenPixelsDataset
 from srmbench.datasets.mnist_sudoku import MnistSudokuDataset
+from srmbench.datasets.counting_objects import CountingObjectsFFHQ
 from srmbench.evaluations.even_pixels_evaluation import EvenPixelsEvaluation
 from srmbench.evaluations.mnist_sudoku_evaluation import MnistSudokuEvaluation
+from srmbench.evaluations.counting_objects_evaluation import CountingPolygonsEvaluation
 
 
 def _pil_to_tensor(image: Image.Image) -> torch.Tensor:
@@ -143,6 +145,118 @@ class EvenPixelsTestIntegration:
         batch_images = []
         for i in range(3):
             image, _ = dataset[i]
+            batch_images.append(_pil_rgb_to_tensor(image))
+        batch_tensor = torch.stack(batch_images)
+        batch_result = evaluation.evaluate(batch_tensor)
+
+        # Both should have all required metrics
+        assert set(single_result.keys()) == set(batch_result.keys())
+        for key in single_result.keys():
+            assert single_result[key].shape == ()
+            assert batch_result[key].shape == ()
+
+
+class CountingObjectsTestIntegration:
+    """Integration tests for CountingObjectsEvaluation with CountingObjects datasets."""
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    # @pytest.mark.skip(reason="Requires pretrained models from HuggingFace")
+    def test_full_pipeline(self, object_variant):
+        """Test the complete pipeline from dataset to evaluation."""
+        dataset = CountingObjectsFFHQ(
+            stage="test",
+            object_variant=object_variant,
+            image_resolution=(256, 256),
+            are_nums_on_images=True,
+        )
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+
+        # Get a sample
+        sample = dataset[0]
+
+        # Convert PIL RGB Image to tensor in CHW format, normalized to [-1, 1]
+        image_tensor = _pil_rgb_to_tensor(sample)
+        batch = image_tensor.unsqueeze(0)  # Add batch dimension
+
+        # Evaluate
+        result = evaluation.evaluate(batch)
+
+        assert "are_vertices_uniform" in result
+        assert "are_numbers_and_objects_consistent" in result
+
+        # All metrics should be scalar tensors
+        for key, value in result.items():
+            assert value.shape == (), f"{key} should be a scalar tensor"
+            assert torch.isfinite(value), f"{key} should be finite"
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    def test_are_numbers_and_objects_consistent_for_dataset_images(self, object_variant):
+        """Test that are_numbers_and_objects_consistent is always true for images from the dataset."""
+        dataset = CountingObjectsFFHQ(
+            stage="test",
+            object_variant=object_variant,
+            image_resolution=(256, 256),
+            are_nums_on_images=True,
+        )
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+
+        # Get a batch of samples from the dataset
+        batch_size = 5
+        batch_images = []
+        for i in range(batch_size):
+            image = dataset[i]
+            batch_images.append(_pil_rgb_to_tensor(image))
+
+        batch_tensor = torch.stack(batch_images)
+        result = evaluation.evaluate(batch_tensor)
+
+        # For images from the dataset, are_numbers_and_objects_consistent should be high (ideally 1.0)
+        # The numbers on the image should match the actual counts
+        assert "are_numbers_and_objects_consistent" in result
+        assert result["are_numbers_and_objects_consistent"] > 0.8, (
+            f"are_numbers_and_objects_consistent should be high (>0.8) for dataset images, "
+            f"got {result['are_numbers_and_objects_consistent']}"
+        )
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    def test_are_numbers_and_objects_consistent_for_random_images(self, object_variant):
+        """Test that are_numbers_and_objects_consistent is low for random images."""
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+
+        # Create random images
+        batch_size = 10
+        batch_input = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        result = evaluation.evaluate(batch_input)
+
+        # For random images, are_numbers_and_objects_consistent should be low
+        # Random images won't have numbers that match the predicted counts
+        assert "are_numbers_and_objects_consistent" in result
+        assert result["are_numbers_and_objects_consistent"] < 0.5, (
+            f"are_numbers_and_objects_consistent should be low (<0.5) for random images, "
+            f"got {result['are_numbers_and_objects_consistent']}"
+        )
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    # @pytest.mark.skip(reason="Requires pretrained models from HuggingFace")
+    def test_batch_processing_consistency(self, object_variant):
+        """Test that batch processing gives consistent results."""
+        dataset = CountingObjectsFFHQ(
+            stage="test",
+            object_variant=object_variant,
+            image_resolution=(256, 256),
+            are_nums_on_images=True,
+        )
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+
+        # Process single sample
+        image_0 = dataset[0]
+        single_tensor = _pil_rgb_to_tensor(image_0).unsqueeze(0)
+        single_result = evaluation.evaluate(single_tensor)
+
+        # Process batch
+        batch_images = []
+        for i in range(3):
+            image = dataset[i]
             batch_images.append(_pil_rgb_to_tensor(image))
         batch_tensor = torch.stack(batch_images)
         batch_result = evaluation.evaluate(batch_tensor)

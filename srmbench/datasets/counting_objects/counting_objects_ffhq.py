@@ -21,7 +21,7 @@ class CountingObjectsFFHQ(CountingObjectsSubdataset):
         ffhq_root: str | None = None,
         image_resolution: tuple[int, int] = (256, 256),
         labeler_name: str | None = None,
-        are_nums_on_images: bool = False,
+        are_nums_on_images: bool = True,
         supersampling_image_size: tuple[int, int] = (512, 512),
         min_vertices: int = 3,
         max_vertices: int = 7,

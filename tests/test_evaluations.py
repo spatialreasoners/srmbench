@@ -10,6 +10,9 @@ from srmbench.evaluations.mnist_sudoku_evaluation import (
     MNISTClassifier,
     MnistSudokuEvaluation,
 )
+from srmbench.evaluations.counting_objects_evaluation import (
+    CountingPolygonsEvaluation,
+)
 
 
 class TestMNISTClassifier:
@@ -138,3 +141,49 @@ class TestEvenPixelsEvaluation:
         # For random images, saturation and value std should be reasonable
         assert torch.isfinite(result["saturation_std"])
         assert torch.isfinite(result["value_std"])
+
+
+class TestCountingPolygonsEvaluation:
+    """Test cases for CountingPolygonsEvaluation."""
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    def test_evaluation_creation(self, object_variant):
+        """Test evaluation creation for both variants."""
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        assert evaluation is not None
+        assert evaluation.classifier is not None
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    def test_evaluation_forward(self, object_variant):
+        """Test evaluation forward pass."""
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        batch_size = 2
+        # Create RGB images in [-1, 1] range
+        input_tensor = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+
+        with torch.no_grad():
+            result = evaluation.evaluate(input_tensor)
+
+        assert "are_vertices_uniform" in result
+        assert "are_numbers_and_objects_consistent" in result
+        assert result["are_vertices_uniform"].shape == ()
+        assert result["are_numbers_and_objects_consistent"].shape == ()
+        assert torch.isfinite(result["are_vertices_uniform"])
+        assert torch.isfinite(result["are_numbers_and_objects_consistent"])
+
+    @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
+    def test_evaluation_batch_processing(self, object_variant):
+        """Test evaluation batch processing."""
+        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+
+        batch_size = 3
+        batch_input = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        batch_result = evaluation.evaluate(batch_input)
+
+        # All metrics should be scalar (batch-averaged)
+        assert batch_result["are_vertices_uniform"].shape == ()
+        assert batch_result["are_numbers_and_objects_consistent"].shape == ()
+
+        # Check that metrics are in expected ranges
+        assert 0 <= batch_result["are_vertices_uniform"] <= 1
+        assert 0 <= batch_result["are_numbers_and_objects_consistent"] <= 1
