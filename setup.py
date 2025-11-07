@@ -25,7 +25,7 @@ def read_requirements():
 
 setup(
     name="srmbench",
-    version="0.1.0",
+    version="0.1.1",
     author="Bartlomiej Pogodzinski, Christopher Wewer, Bernt Schiele, Jan Eric Lenssen",
     author_email="bpogodzi@mpi-inf.mpg.de",
     description="Datasets and evaluation from the Spatial Reasoning with Denoising Models paper",
