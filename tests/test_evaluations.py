@@ -91,7 +91,7 @@ class TestEvenPixelsEvaluation:
         evaluation = EvenPixelsEvaluation()
         batch_size = 2
         # Create RGB images in [0, 1] range, convert to [-1, 1]
-        input_tensor = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        input_tensor = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
 
         with torch.no_grad():
             result = evaluation.evaluate(input_tensor)
@@ -111,7 +111,7 @@ class TestEvenPixelsEvaluation:
         evaluation = EvenPixelsEvaluation()
 
         batch_size = 3
-        batch_input = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        batch_input = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
         batch_result = evaluation.evaluate(batch_input)
 
         # All metrics should be scalar (batch-averaged)
@@ -133,7 +133,7 @@ class TestEvenPixelsEvaluation:
 
         # Create images with constant saturation and value (should have std close to 0)
         # Random hue values
-        input_tensor = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        input_tensor = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
 
         with torch.no_grad():
             result = evaluation.evaluate(input_tensor)
@@ -159,7 +159,7 @@ class TestCountingPolygonsEvaluation:
         evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
         batch_size = 2
         # Create RGB images in [-1, 1] range
-        input_tensor = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        input_tensor = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
 
         with torch.no_grad():
             result = evaluation.evaluate(input_tensor)
@@ -177,7 +177,7 @@ class TestCountingPolygonsEvaluation:
         evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
 
         batch_size = 3
-        batch_input = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        batch_input = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
         batch_result = evaluation.evaluate(batch_input)
 
         # All metrics should be scalar (batch-averaged)

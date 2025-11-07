@@ -166,7 +166,7 @@ class CountingObjectsTestIntegration:
         dataset = CountingObjectsFFHQ(
             stage="test",
             object_variant=object_variant,
-            image_resolution=(256, 256),
+            image_resolution=(128, 128),
             are_nums_on_images=True,
         )
         evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
@@ -195,7 +195,7 @@ class CountingObjectsTestIntegration:
         dataset = CountingObjectsFFHQ(
             stage="test",
             object_variant=object_variant,
-            image_resolution=(256, 256),
+            image_resolution=(128, 128),
             are_nums_on_images=True,
         )
         evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
@@ -225,7 +225,7 @@ class CountingObjectsTestIntegration:
 
         # Create random images
         batch_size = 10
-        batch_input = torch.rand(batch_size, 3, 256, 256) * 2.0 - 1.0
+        batch_input = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
         result = evaluation.evaluate(batch_input)
 
         # For random images, are_numbers_and_objects_consistent should be low
@@ -243,7 +243,7 @@ class CountingObjectsTestIntegration:
         dataset = CountingObjectsFFHQ(
             stage="test",
             object_variant=object_variant,
-            image_resolution=(256, 256),
+            image_resolution=(128, 128),
             are_nums_on_images=True,
         )
         evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
