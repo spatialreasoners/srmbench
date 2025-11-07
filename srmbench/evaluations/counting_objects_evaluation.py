@@ -29,14 +29,13 @@ class MultiHeadLayer(nn.Module):
     
     
 class CountingObjectsClassifier(nn.Module, PyTorchModelHubMixin):
-    def __init__(self, min_vertices: int, max_vertices: int, min_num_polygons: int, max_num_polygons: int, model_path: str, device: str | torch.device = "cuda"):
+    def __init__(self, min_vertices: int, max_vertices: int, min_num_polygons: int, max_num_polygons: int, device: str | torch.device = "cuda"):
         super().__init__()
         self.device = device
         self.min_vertices = min_vertices
         self.max_vertices = max_vertices
         self.min_num_polygons = min_num_polygons
         self.max_num_polygons = max_num_polygons
-        self.model_path = model_path
         
         self.num_classes = {
             "num_polygons": self.max_num_polygons - self.min_num_polygons + 1,
@@ -48,7 +47,9 @@ class CountingObjectsClassifier(nn.Module, PyTorchModelHubMixin):
         )
         self.num_classes["numbers_label"] = self.labeler.num_classes
         
-        self.model = self.load_from_file()
+        self.model = resnet50(pretrained=False)
+        self.model.fc = MultiHeadLayer(self.model.fc.in_features, self.num_classes)
+
         
         
     def predict(
@@ -79,17 +80,13 @@ class CountingObjectsClassifier(nn.Module, PyTorchModelHubMixin):
 
         return outputs, confidences
     
-    def load_from_file(self) -> nn.Module:
-        model = resnet50(pretrained=False)
-        model.fc = MultiHeadLayer(model.fc.in_features, self.num_classes)
-
-        model.load_state_dict(
-            torch.load(self.model_path, map_location=self.device, weights_only=True),
+    def load_from_file(self, model_path: str) -> nn.Module:
+        self.model.load_state_dict(
+            torch.load(model_path, map_location=self.device, weights_only=True),
             strict=True,
         )
-        model.to(self.device)
-        model.eval()
-        return model
+        self.model.to(self.device)
+        self.model.eval()
     
 
 class CountingPolygonsEvaluation:
