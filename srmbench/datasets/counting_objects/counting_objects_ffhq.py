@@ -19,7 +19,7 @@ class CountingObjectsFFHQ(CountingObjectsSubdataset):
         stage: str = "train",
         root: str | None = None,
         ffhq_root: str | None = None,
-        image_resolution: tuple[int, int] = (256, 256),
+        image_resolution: tuple[int, int] = (128, 128),
         labeler_name: str | None = None,
         are_nums_on_images: bool = True,
         supersampling_image_size: tuple[int, int] = (512, 512),
