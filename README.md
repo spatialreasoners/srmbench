@@ -58,8 +58,8 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 **Challenge**: Inpaint the image by filling the missing cells with MNIST digits where no digit repeats in any row, column, or 3×3 subgrid.
 
 **What the model needs to understand:**
-- **Digit recognition**: Understanding and generating MNIST digits correctly [*easy task*]
-- **Spatial relationships**: Row, column, and subgrid uniqueness [*hard task*]
+- **Digit recognition**: Understanding and generating MNIST digits correctly [*easy*]
+- **Spatial relationships**: Row, column, and subgrid uniqueness [*hard*]
 
 **Dataset Details:**
 - **Image size**: 252×252 pixels (9×9 grid of 28×28 MNIST digits)
@@ -82,8 +82,8 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 **Challenge**: Generate images where exactly 50% of pixels are one color and 50% are another color, with uniform saturation and brightness.
 
 **What the model needs to understand:**
-- **Color choice**: Choosing two colors that are opposite in the HSV color space [*easy task*]
-- **Pixel-level counting**: Precise balance between two colors [*hard task*]
+- **Color choice**: Choosing two colors that are opposite in the HSV color space [*easy*]
+- **Pixel-level counting**: Precise balance between two colors [*hard*]
 
 **Dataset Details:**
 - **Image size**: 32×32 pixels 
@@ -107,8 +107,8 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 **Challenge**: Generate images with the number of objects (polygons or stars) where the displayed numbers match the actual object counts.
 
 **What the model needs to understand:**
-- **Consistency**: All objects within an image have the same number of vertices (uniform constraint) [*medium task*]
-- **Matching numbers**: The displayed numbers match the actual object counts and number of vertices [*hard task*]
+- **Consistency**: All objects within an image have the same number of vertices (uniform constraint) [*medium*]
+- **Matching numbers**: The displayed numbers match the actual object counts and number of vertices [*hard*]
 
 **Dataset Details:**
 - **Image size**: 128×128 pixels 
