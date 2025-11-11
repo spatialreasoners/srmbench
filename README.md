@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/srmbench.svg)](https://pypi.org/project/srmbench/)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/srmbench/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/spatialreasoners/srmbench/actions/workflows/tests.yml/badge.svg)](https://github.com/spatialreasoners/srmbench/actions)
+[![Tests](https://github.com/spatialreasoners/srmbench/actions/workflows/ci.yml/badge.svg)](https://github.com/spatialreasoners/srmbench/actions)
 [![arXiv](https://img.shields.io/badge/arXiv-2502.21075-b31b1b.svg)](https://arxiv.org/abs/2502.21075)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://geometric-rl.mpi-inf.mpg.de/srm/)
 
