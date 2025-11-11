@@ -17,7 +17,6 @@ from srmbench.evaluations import MnistSudokuEvaluation
 image_mask_transform = transforms.Compose([
     transforms.ToImage(),
     transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
-    transforms.Lambda(lambda x: x.squeeze(0)),       # Remove channel dimension
 ])
 
 # Create dataset with transforms

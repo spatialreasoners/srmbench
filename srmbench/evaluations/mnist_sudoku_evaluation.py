@@ -91,10 +91,7 @@ class MnistSudokuEvaluation:
         return {"duplicate_count": distance, "is_valid_sudoku": is_valid_sudoku}
 
     def evaluate(
-        self, samples: Float[Tensor, "batch height width"]
+        self, samples: Float[Tensor, "batch 1 height width"]
     ) -> dict[str, Shaped[Tensor, "batch"]]:
-        # Add channel dimension if not present
-        if samples.dim() == 3:
-            samples = samples.unsqueeze(1)  # [batch, height, width] -> [batch, 1, height, width]
         pred = self._discretize(samples)
         return self._get_sudoku_metrics(pred)

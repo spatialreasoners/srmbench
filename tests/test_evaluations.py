@@ -48,7 +48,7 @@ class TestMnistSudokuEvaluation:
         """Test evaluation forward pass."""
         evaluation = MnistSudokuEvaluation()
         batch_size = 2
-        input_tensor = torch.randint(0, 255, (batch_size, 252, 252), dtype=torch.float32)
+        input_tensor = torch.randint(0, 255, (batch_size, 1, 252, 252), dtype=torch.float32)
 
         with torch.no_grad():
             result = evaluation.evaluate(input_tensor)
@@ -62,7 +62,7 @@ class TestMnistSudokuEvaluation:
         """Test evaluation batch processing."""
         evaluation = MnistSudokuEvaluation()
 
-        batch_input = torch.randint(0, 255, (3, 252, 252), dtype=torch.float32)
+        batch_input = torch.randint(0, 255, (3, 1, 252, 252), dtype=torch.float32)
         batch_result = evaluation.evaluate(batch_input)
 
         assert batch_result["is_valid_sudoku"].shape == (3,)
