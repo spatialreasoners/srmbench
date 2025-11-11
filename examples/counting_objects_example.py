@@ -41,6 +41,7 @@ evaluation = CountingObjectsEvaluation(object_variant="polygons", device="cpu")
 # Evaluate batches (just first batch for testing)
 for images in dataloader:
     results = evaluation.evaluate(images, include_counts=True)
+    
     print(f"Vertices Uniform: {results['are_vertices_uniform']:.2%}")
     print(f"Numbers Match Objects: {results['numbers_match_objects']:.2%}")
     print(f"✅ Counting Objects example works!")

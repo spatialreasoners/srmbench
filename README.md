@@ -1,7 +1,7 @@
 # SRM Benchmarks
 
 [![PyPI version](https://badge.fury.io/py/srmbench.svg)](https://pypi.org/project/srmbench/)
-[![Python](https://img.shields.io/pypi/pyversions/srmbench.svg)](https://pypi.org/project/srmbench/)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/srmbench/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/spatialreasoners/srmbench/actions/workflows/tests.yml/badge.svg)](https://github.com/spatialreasoners/srmbench/actions)
 [![arXiv](https://img.shields.io/badge/arXiv-2502.21075-b31b1b.svg)](https://arxiv.org/abs/2502.21075)
@@ -10,7 +10,7 @@
 A minimalistic package with **benchmark datasets** and **evaluation metrics** to see how good is your image generative model at understanding **complex spatial relationships**. Those are the datasets used in the ICML 2025 paper [Spatial Reasoning with Denoising Models](https://geometric-rl.mpi-inf.mpg.de/srm/). All the dataset files and evaluation models have been deployed in their minimal forms to Huggingface, and will be downloaded **automatically** when you use the package.
 
 <p align="center">
-  <img src="docs/images/showcase.png" alt="SRM Benchmark Datasets" width="100%"/>
+  <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/showcase.png?raw=true" alt="SRM Benchmark Datasets" width="100%"/>
 </p>
 
 ## Installation
@@ -40,21 +40,19 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 ### 🧩 MNIST Sudoku
 
 <p align="center">
-  <img src="docs/images/mnist_sudoku_grid.png" alt="MNIST Sudoku Examples" width="100%"/>
+  <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/mnist_sudoku_grid.png?raw=true" alt="MNIST Sudoku Examples" width="100%"/>
 </p>
 
 **Challenge**: Inpaint the image by filling the missing cells with MNIST digits where no digit repeats in any row, column, or 3×3 subgrid.
 
 **What the model needs to understand:**
-- **Global constraints**: Sudoku validity rules that span the entire image
-- **Spatial relationships**: Row, column, and subgrid membership
-- **Digit recognition**: Understanding and generating MNIST digits correctly
-- **Constraint propagation**: How placing one digit affects valid placements elsewhere
+- **Digit recognition**: Understanding and generating MNIST digits correctly [*easy task*]
+- **Spatial relationships**: Row, column, and subgrid uniqueness [*hard task*]
 
 **Dataset Details:**
 - **Image size**: 252×252 pixels (9×9 grid of 28×28 MNIST digits)
 - **Format**: Grayscale images with corresponding masks
-- **Masks**: Indicate which cells are given (black) vs. need to be filled (white)
+- **Masks**: Indicate which cells are given (white) vs. need to be filled (black)
 - **Difficulty**: Configurable via `min_given_cells` and `max_given_cells` parameters
 
 **Evaluation Metrics:**
@@ -66,71 +64,57 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 ### 🎨 Even Pixels
 
 <p align="center">
-  <img src="docs/images/even_pixels_grid.png" alt="Even Pixels Examples" width="100%"/>
+  <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/even_pixels_grid.png?raw=true" alt="Even Pixels Examples" width="100%"/>
 </p>
 
 **Challenge**: Generate images where exactly 50% of pixels are one color and 50% are another color, with uniform saturation and brightness.
 
 **What the model needs to understand:**
-- **Pixel-level counting**: Precise balance between two colors
-- **Global distribution**: Maintaining exact 50/50 split across entire image
-- **Color consistency**: Uniform saturation and value (HSV color space)
-- **Statistical properties**: Perfect balance down to the pixel level
+- **Color choice**: Choosing two colors that are opposite in the HSV color space [*easy task*]
+- **Pixel-level counting**: Precise balance between two colors [*hard task*]
 
 **Dataset Details:**
-- **Image size**: 32×32 pixels (1,024 total pixels)
+- **Image size**: 32×32 pixels 
 - **Format**: RGB images
 - **Color constraint**: There are two colors in the image (with opposite hue values), randomly positioned, but the count of pixels for each color is exactly 50% of the total number of pixels.
 
 **Evaluation Metrics:**
-- `saturation_std`: Standard deviation of saturation (should be ~0)
-- `value_std`: Standard deviation of brightness (should be ~0)
 - `color_imbalance_count`: Deviation from perfect 50/50 split (0 = perfect)
 - `is_color_count_even`: Boolean for exact pixel balance (1.0 = perfect)
+- `saturation_std`: Standard deviation of saturation (should be ~0)
+- `value_std`: Standard deviation of brightness (should be ~0)
 
 ---
 
 ### 🔢 Counting Objects
 
 <p align="center">
-  <img src="docs/images/counting_objects_grid.png" alt="Counting Objects Examples" width="100%"/>
+  <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/counting_objects_grid.png?raw=true" alt="Counting Objects Examples" width="100%"/>
 </p>
 
-**Challenge**: Generate images with a specific number of objects (polygons or stars) where the displayed numbers match the actual object counts.
+**Challenge**: Generate images with the number of objects (polygons or stars) where the displayed numbers match the actual object counts.
 
 **What the model needs to understand:**
-- **Object counting**: Generating exact numbers of distinct objects
-- **Number placement**: Positioning numbers that accurately represent counts
-- **Object consistency**: All objects having the same number of vertices (uniform constraint)
-- **Semantic coherence**: Numbers matching what's visually present
+- **Consistency**: All objects within an image have the same number of vertices (uniform constraint) [*medium task*]
+- **Matching numbers**: The displayed numbers match the actual object counts and number of vertices [*hard task*]
 
 **Dataset Details:**
-- **Image size**: Configurable (typically 128×128 or 256×256)
+- **Image size**: 128×128 pixels 
 - **Format**: RGB images with objects overlaid on FFHQ background faces
 - **Variants**: 
-  - **Polygons**: 3-9 sided polygons
-  - **Stars**: 4-10 pointed stars
+  - **Polygons**: 3-7 sided polygons
+  - **Stars**: 2-9 pointed stars
 - **Numbers**: Optional overlay showing object counts (via `are_nums_on_images` parameter)
 
 **Evaluation Metrics:**
 - `are_vertices_uniform`: Fraction where all objects have same vertex count
 - `numbers_match_objects`: Fraction where displayed numbers match actual counts
-- `relative_vertex_count_N`: Distribution of N-vertex objects
-- `relative_polygons_count_N`: Distribution of N objects
-- Confidence scores: Model's certainty in predictions
+- Additional, optional metrics:
+    - `relative_vertex_count_N`: Fraction of images with N-vertex objects (Can show biases when averaged over larger number of images)
+    - `relative_polygons_count_N`: Fraction of images with N objects (Can show biases when averaged over larger number of images)
 
----
 
-## Usage
-
-### Available Datasets
-
-SRM Benchmarks provides three main datasets for evaluating spatial reasoning capabilities:
-- **MNIST Sudoku**: Sudoku puzzles with MNIST digits
-- **Even Pixels**: Images with specific color distribution constraints
-- **Counting Objects**: Images with polygons or stars to count (with optional numbers overlay)
-
-### Quick Start
+## Quick Start 
 
 #### 1. MNIST Sudoku Dataset
 
@@ -142,13 +126,7 @@ from srmbench.datasets import MnistSudokuDataset
 from srmbench.evaluations import MnistSudokuEvaluation
 
 # Define transforms for images and masks
-image_transform = transforms.Compose([
-    transforms.ToImage(),
-    transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
-    transforms.Lambda(lambda x: x.squeeze(0)),       # Remove channel dimension
-])
-
-mask_transform = transforms.Compose([
+image_mask_transform = transforms.Compose([
     transforms.ToImage(),
     transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
     transforms.Lambda(lambda x: x.squeeze(0)),       # Remove channel dimension
@@ -157,8 +135,8 @@ mask_transform = transforms.Compose([
 # Create dataset with transforms
 dataset = MnistSudokuDataset(
     stage="test",
-    transform=image_transform,
-    mask_transform=mask_transform
+    transform=image_mask_transform,
+    mask_transform=image_mask_transform
 )
 
 # Create DataLoader

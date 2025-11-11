@@ -1,6 +1,7 @@
 # SRM Benchmarks Examples
 
 This directory contains working examples that demonstrate how to use each dataset and evaluation in the SRM Benchmarks package.
+Here we evaluate the clean samples, so the values are always **Correct**. In practice you want to train on the correct samples from the dataset and **evaluate** those **generated** by your model.
 
 ## Running the Examples
 

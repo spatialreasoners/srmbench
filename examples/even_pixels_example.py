@@ -33,6 +33,7 @@ evaluation = EvenPixelsEvaluation()
 # Evaluate batches (just first batch for testing)
 for images in dataloader:
     results = evaluation.evaluate(images)
+    
     print(f"Saturation STD: {results['saturation_std']:.4f}")
     print(f"Value STD: {results['value_std']:.4f}")
     print(f"Color Imbalance: {results['color_imbalance_count']:.0f} pixels")

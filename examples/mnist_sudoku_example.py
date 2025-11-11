@@ -14,13 +14,7 @@ from srmbench.datasets import MnistSudokuDataset
 from srmbench.evaluations import MnistSudokuEvaluation
 
 # Define transforms for images and masks
-image_transform = transforms.Compose([
-    transforms.ToImage(),
-    transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
-    transforms.Lambda(lambda x: x.squeeze(0)),       # Remove channel dimension
-])
-
-mask_transform = transforms.Compose([
+image_mask_transform = transforms.Compose([
     transforms.ToImage(),
     transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
     transforms.Lambda(lambda x: x.squeeze(0)),       # Remove channel dimension
@@ -29,8 +23,8 @@ mask_transform = transforms.Compose([
 # Create dataset with transforms
 dataset = MnistSudokuDataset(
     stage="test",
-    transform=image_transform,
-    mask_transform=mask_transform
+    transform=image_mask_transform,
+    mask_transform=image_mask_transform
 )
 
 # Create DataLoader
@@ -47,6 +41,7 @@ evaluation = MnistSudokuEvaluation()
 # Evaluate batches (just first batch for testing)
 for images, masks in dataloader:
     results = evaluation.evaluate(images)
+    
     # duplicate_count = 0 means valid sudoku (no duplicates)
     print(f"Valid Sudoku: {results['is_valid_sudoku'].float().mean():.2%}")
     print(f"Avg Duplicate Count: {results['duplicate_count'].float().mean():.2f}")
