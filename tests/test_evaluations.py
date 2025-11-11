@@ -182,8 +182,8 @@ class TestCountingPolygonsEvaluation:
 
         # All metrics should be scalar (batch-averaged)
         assert batch_result["are_vertices_uniform"].shape == ()
-        assert batch_result["are_numbers_and_objects_consistent"].shape == ()
+        assert batch_result["numbers_match_objects"].shape == ()
 
         # Check that metrics are in expected ranges
         assert 0 <= batch_result["are_vertices_uniform"] <= 1
-        assert 0 <= batch_result["are_numbers_and_objects_consistent"] <= 1
+        assert 0 <= batch_result["numbers_match_objects"] <= 1

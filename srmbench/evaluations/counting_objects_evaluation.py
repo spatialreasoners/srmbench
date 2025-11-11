@@ -137,7 +137,7 @@ class CountingObjectsEvaluation:
             for i in range(*counts_range)
         }
 
-    def _are_numbers_and_objects_consistent(
+    def _numbers_match_objects(
         self,
         class_label: Integer[Tensor, "batch"],
         num_polygons: Integer[Tensor, "batch"],
