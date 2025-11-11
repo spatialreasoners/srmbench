@@ -13,6 +13,18 @@ A minimalistic package with **benchmark datasets** and **evaluation metrics** to
   <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/showcase.png?raw=true" alt="SRM Benchmark Datasets" width="100%"/>
 </p>
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Datasets](#datasets)
+  - [🧩 MNIST Sudoku](#-mnist-sudoku)
+  - [🎨 Even Pixels](#-even-pixels)
+  - [🔢 Counting Objects](#-counting-objects)
+- [Quick Start](#quick-start)
+- [License](#license)
+- [Running Tests](#running-tests)
+- [Citation](#citation)
+
 ## Installation
 ### From PyPI
 ```bash
@@ -116,14 +128,14 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 
 ## Quick Start 
 
-#### 1. MNIST Sudoku Dataset
+### 1. MNIST Sudoku Dataset
 
+**Training (Load Dataset):**
 ```python
 import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2 as transforms
 from srmbench.datasets import MnistSudokuDataset
-from srmbench.evaluations import MnistSudokuEvaluation
 
 # Define transforms for images and masks
 image_mask_transform = transforms.Compose([
@@ -134,7 +146,7 @@ image_mask_transform = transforms.Compose([
 
 # Create dataset with transforms
 dataset = MnistSudokuDataset(
-    stage="test",
+    stage="train",  # or "test"
     transform=image_mask_transform,
     mask_transform=image_mask_transform
 )
@@ -143,34 +155,44 @@ dataset = MnistSudokuDataset(
 dataloader = DataLoader(
     dataset,
     batch_size=8,
-    shuffle=False,
+    shuffle=True,
     num_workers=4,
 )
 
-# Use with evaluation
+# Training loop
+for images, masks in dataloader:
+    # Apply mask and train your model to reconstruct
+    # masked_images = images * masks  # Keep given cells
+    # reconstructed = your_model_inpainting_function(masked_images, masks)
+    # loss = loss_fn(reconstructed, images)
+    pass
+```
+
+**Evaluation:**
+```python
+from srmbench.evaluations import MnistSudokuEvaluation
+
 evaluation = MnistSudokuEvaluation()
 
-# Evaluate batches
+# Evaluate your model's generated images
 for images, masks in dataloader:
-    # Here you can apply the mask and reconstruct using your model.
-    # For example:
-    # masked_images = images * (1 - masks)  # Mask out given cells
-    # reconstructed = model(masked_images, masks)
-
-    results = evaluation.evaluate(images)
-    # duplicate_count = 0 means valid sudoku (no duplicates)
+    masked_images = images * masks
+    
+    generated_images = your_model_inpainting_function(masked_images, masks)
+    results = evaluation.evaluate(generated_images)
+    
     print(f"Valid Sudoku: {results['is_valid_sudoku'].float().mean():.2%}")
     print(f"Avg Duplicate Count: {results['duplicate_count'].float().mean():.2f}")
 ```
 
-#### 2. Even Pixels Dataset
+### 2. Even Pixels Dataset
 
+**Training (Load Dataset):**
 ```python
 import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2 as transforms
 from srmbench.datasets import EvenPixelsDataset
-from srmbench.evaluations import EvenPixelsEvaluation
 
 # Define transform: PIL RGB (H, W, 3) -> Tensor (3, H, W) in [-1, 1]
 transform = transforms.Compose([
@@ -180,36 +202,48 @@ transform = transforms.Compose([
 ])
 
 # Create dataset with transforms
-dataset = EvenPixelsDataset(stage="test", transform=transform)
+dataset = EvenPixelsDataset(stage="train", transform=transform)  # or "test"
 
 # Create DataLoader
 dataloader = DataLoader(
     dataset,
     batch_size=8,
-    shuffle=False,
+    shuffle=True,
     num_workers=4,
 )
 
-# Use with evaluation
-evaluation = EvenPixelsEvaluation()
-
-# Evaluate batches
+# Training loop
 for images in dataloader:
-    results = evaluation.evaluate(images)
-    print(f"Saturation STD: {results['saturation_std']:.4f}")
-    print(f"Value STD: {results['value_std']:.4f}")
-    print(f"Color Imbalance: {results['color_imbalance_count']:.0f} pixels")
-    print(f"Perfect Balance: {results['is_color_count_even']:.2%}")
+    # Train your generative model
+    # generated = model(noise)
+    # loss = loss_fn(generated, images)
+    pass
 ```
 
-#### 3. Counting Objects Dataset
+**Evaluation:**
+```python
+from srmbench.evaluations import EvenPixelsEvaluation
 
+evaluation = EvenPixelsEvaluation()
+
+# Generate and evaluate images from your model
+images_batch = your_model_generation_function(batch_size=8)
+results = evaluation.evaluate(images_batch)
+
+print(f"Saturation STD: {results['saturation_std']:.4f}")
+print(f"Value STD: {results['value_std']:.4f}")
+print(f"Color Imbalance: {results['color_imbalance_count']:.0f} pixels")
+print(f"Perfect Balance: {results['is_color_count_even']:.2%}")
+```
+
+### 3. Counting Objects Dataset
+
+**Training (Load Dataset):**
 ```python
 import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2 as transforms
 from srmbench.datasets import CountingObjectsFFHQ
-from srmbench.evaluations import CountingObjectsEvaluation
 
 # Define transform: PIL RGB (H, W, 3) -> Tensor (3, H, W) in [-1, 1]
 transform = transforms.Compose([
@@ -219,9 +253,8 @@ transform = transforms.Compose([
 ])
 
 # Create dataset with transforms (polygons or stars variant)
-# NOTE: Use image_resolution=(128, 128) to match model training resolution
 dataset = CountingObjectsFFHQ(
-    stage="test",
+    stage="train",  # or "test"
     object_variant="polygons",  # or "stars"
     image_resolution=(128, 128),
     are_nums_on_images=True,
@@ -232,18 +265,39 @@ dataset = CountingObjectsFFHQ(
 dataloader = DataLoader(
     dataset,
     batch_size=8,
-    shuffle=False,
+    shuffle=True,
     num_workers=4,
 )
 
-# Use with evaluation (set device="cpu" if no GPU available)
+# Training loop
+for images in dataloader:
+    # Train your generative model
+    # generated = model(noise)
+    # loss = loss_fn(generated, images)
+    pass
+```
+
+**Evaluation:**
+```python
+from srmbench.evaluations import CountingObjectsEvaluation
+
+# Set device="cpu" if no GPU available
 evaluation = CountingObjectsEvaluation(object_variant="polygons", device="cpu")
 
-# Evaluate batches
-for images in dataloader:
-    results = evaluation.evaluate(images, include_counts=True)
-    print(f"Vertices Uniform: {results['are_vertices_uniform']:.2%}")
-    print(f"Numbers Match Objects: {results['numbers_match_objects']:.2%}")
+# Generate and evaluate images from your model
+images_batch = your_model_generation_function(batch_size=8)
+results = evaluation.evaluate(images_batch, include_counts=True)
+
+print(f"Vertices Uniform: {results['are_vertices_uniform']:.2%}")
+print(f"Numbers Match Objects: {results['numbers_match_objects']:.2%}")
+```
+
+The basic examples in runnable variants are available in the [examples](examples) directory.
+
+```bash
+python examples/mnist_sudoku_example.py
+python examples/even_pixels_example.py
+python examples/counting_objects_example.py
 ```
 
 ## License
