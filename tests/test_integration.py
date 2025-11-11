@@ -87,9 +87,8 @@ class EvenPixelsTestIntegration:
         dataset = EvenPixelsDataset(stage="test")
         evaluation = EvenPixelsEvaluation()
 
-        # Get a sample - dataset returns (image, mask) tuple
-        sample = dataset[0]
-        image, mask = sample
+        # Get a sample - dataset returns just an image
+        image = dataset[0]
 
         # Convert PIL RGB Image to tensor in CHW format, normalized to [-1, 1]
         image_tensor = _pil_rgb_to_tensor(image)
@@ -117,7 +116,7 @@ class EvenPixelsTestIntegration:
         batch_size = 5
         batch_images = []
         for i in range(batch_size):
-            image, _ = dataset[i]
+            image = dataset[i]
             batch_images.append(_pil_rgb_to_tensor(image))
 
         batch_tensor = torch.stack(batch_images)
@@ -137,14 +136,14 @@ class EvenPixelsTestIntegration:
         evaluation = EvenPixelsEvaluation()
 
         # Process single sample
-        image_0, _ = dataset[0]
+        image_0 = dataset[0]
         single_tensor = _pil_rgb_to_tensor(image_0).unsqueeze(0)
         single_result = evaluation.evaluate(single_tensor)
 
         # Process batch
         batch_images = []
         for i in range(3):
-            image, _ = dataset[i]
+            image = dataset[i]
             batch_images.append(_pil_rgb_to_tensor(image))
         batch_tensor = torch.stack(batch_images)
         batch_result = evaluation.evaluate(batch_tensor)

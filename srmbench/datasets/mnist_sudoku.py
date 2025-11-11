@@ -25,6 +25,8 @@ class MnistSudokuDataset(SRMDataset):
         stage: Literal["train", "test"] = "train",
         min_given_cells: int = 0,  # 0 means no given cells
         max_given_cells: int = 80,  # 80 means all but one cell is given
+        transform=None,
+        mask_transform=None,
     ) -> None:
         super().__init__(stage)
 
@@ -41,6 +43,8 @@ class MnistSudokuDataset(SRMDataset):
 
         self.min_given_cells = min_given_cells
         self.max_given_cells = max_given_cells
+        self.transform = transform
+        self.mask_transform = mask_transform
 
         self.mnist_images, self.sudoku_grids = self._load_sudoku_data()
 
@@ -115,6 +119,12 @@ class MnistSudokuDataset(SRMDataset):
         image = self._load_full_image(rng)
         mask = self._get_random_masks(rng)
         mask_image = Image.fromarray(mask.astype(np.uint8))
+
+        if self.transform is not None:
+            image = self.transform(image)
+        
+        if self.mask_transform is not None:
+            mask_image = self.mask_transform(mask_image)
 
         return image, mask_image
 

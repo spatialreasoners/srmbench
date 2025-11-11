@@ -204,5 +204,6 @@ coverage.xml
 # Generated example images
 example_images/
 generate_examples.py
+generate_samples.py
 
 scripts/

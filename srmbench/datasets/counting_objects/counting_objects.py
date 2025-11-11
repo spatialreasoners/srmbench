@@ -41,6 +41,7 @@ class CountingObjectsBase(SRMDataset, ABC):
         object_variant: Literal["stars", "polygons"] = "stars",
         star_radius_ratio: float = 0.1,
         cache_dir: str | None = None,
+        transform=None,
     ) -> None:
         super().__init__(stage)
 
@@ -59,6 +60,7 @@ class CountingObjectsBase(SRMDataset, ABC):
         self.object_variant = object_variant
         self.star_radius_ratio = star_radius_ratio
         self._cache_dir = cache_dir
+        self.transform = transform
 
         self.min_circle_num = 3 if self.are_nums_on_images else 1
         self.circle_positions = self._load_circle_positions()
@@ -462,6 +464,9 @@ class CountingObjectsBase(SRMDataset, ABC):
         )
         image = Image.alpha_composite(base_image, overlay_image)
         image = image.convert("RGB")
+
+        if self.transform is not None:
+            image = self.transform(image)
 
         # Return image only (SRMDataset allows tuple or Image)
         return image

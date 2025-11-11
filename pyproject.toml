@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "srmbench"
-version = "0.1.2"
+dynamic = ["version"]
 description = "Datasets and evaluation from the Spatial Reasoning with Denoising Models paper"
 readme = "README.md"
 license = {text = "MIT"}
@@ -77,6 +77,9 @@ exclude = ["tests*", "docs*", "examples*"]
 
 [tool.setuptools.package-data]
 srmbench = ["*.yaml", "*.yml", "*.json", "*.txt"]
+
+[tool.setuptools.dynamic]
+version = {attr = "srmbench.__version__.__version__"}
 
 # Black configuration
 [tool.black]

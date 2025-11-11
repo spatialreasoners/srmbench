@@ -9,8 +9,8 @@ from .srm_dataset import SRMDataset
 
 
 class EvenPixelsDataset(SRMDataset):
-    image_shape = (256, 256)
-    mask_shape = (256, 256)
+    image_shape = (32, 32)
+    mask_shape = (32, 32)
 
     def __init__(
         self,
@@ -18,6 +18,7 @@ class EvenPixelsDataset(SRMDataset):
         saturation: float = 1.0,
         value: float = 0.7,
         dataset_size: int | None = None,
+        transform=None,
     ) -> None:
         super().__init__(stage)
 
@@ -35,6 +36,7 @@ class EvenPixelsDataset(SRMDataset):
 
         self.saturation = saturation
         self.value = value
+        self.transform = transform
 
     @staticmethod
     def _get_even_binary_mask(
@@ -65,15 +67,16 @@ class EvenPixelsDataset(SRMDataset):
         data[:, :, 1] = self.saturation
         data[:, :, 2] = self.value
 
-        return Image.fromarray(np.uint8(data * 255), mode="HSV").convert("RGB")
+        return Image.fromarray(np.uint8(data * 255), "HSV").convert("RGB")
 
     def __getitem__(self, idx: int) -> Image.Image:
         rng = np.random.default_rng(idx) if self.is_deterministic else None
-
         image = self._get_image(rng)
-        mask = self._get_even_binary_mask(self.image_shape[1], self.image_shape[0], rng)
-
-        return image, mask
+        
+        if self.transform is not None:
+            image = self.transform(image)
+        
+        return image
 
     def __len__(self) -> int:
         return 1000_000
