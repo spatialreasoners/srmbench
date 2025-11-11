@@ -15,7 +15,7 @@ Used in the ICML 2025 paper: [Spatial Reasoning with Denoising Models](https://g
 - Three challenging datasets (MNIST Sudoku, Even Pixels, Counting Objects)
 - Automated evaluation metrics for each dataset
 - Automatic dataset files and evaluation models download from Hugging Face
-- Each dataset implemented in a lazy, low-data fashion (<3GB for all datasets and evaluationmodels combined)
+- Each dataset implemented in a lazy, low-data fashion (<3GB for all datasets+models combined)
 
 <p align="center">
   <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/showcase.png?raw=true" alt="SRM Benchmark Datasets" width="100%"/>
