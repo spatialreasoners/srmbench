@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "srmbench"
-version = "0.1.1"
+version = "0.1.2"
 description = "Datasets and evaluation from the Spatial Reasoning with Denoising Models paper"
 readme = "README.md"
 license = {text = "MIT"}

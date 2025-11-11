@@ -11,7 +11,7 @@ from srmbench.evaluations.mnist_sudoku_evaluation import (
     MnistSudokuEvaluation,
 )
 from srmbench.evaluations.counting_objects_evaluation import (
-    CountingPolygonsEvaluation,
+    CountingObjectsEvaluation,
 )
 
 
@@ -149,14 +149,14 @@ class TestCountingPolygonsEvaluation:
     @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
     def test_evaluation_creation(self, object_variant):
         """Test evaluation creation for both variants."""
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
         assert evaluation is not None
         assert evaluation.classifier is not None
 
     @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
     def test_evaluation_forward(self, object_variant):
         """Test evaluation forward pass."""
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
         batch_size = 2
         # Create RGB images in [-1, 1] range
         input_tensor = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
@@ -165,16 +165,16 @@ class TestCountingPolygonsEvaluation:
             result = evaluation.evaluate(input_tensor)
 
         assert "are_vertices_uniform" in result
-        assert "are_numbers_and_objects_consistent" in result
+        assert "numbers_match_objects" in result
         assert result["are_vertices_uniform"].shape == ()
-        assert result["are_numbers_and_objects_consistent"].shape == ()
+        assert result["numbers_match_objects"].shape == ()
         assert torch.isfinite(result["are_vertices_uniform"])
-        assert torch.isfinite(result["are_numbers_and_objects_consistent"])
+        assert torch.isfinite(result["numbers_match_objects"])
 
     @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
     def test_evaluation_batch_processing(self, object_variant):
         """Test evaluation batch processing."""
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
 
         batch_size = 3
         batch_input = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0

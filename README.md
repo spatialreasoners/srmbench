@@ -35,84 +35,93 @@ SRM Benchmarks provides three main datasets for evaluating spatial reasoning cap
 #### 1. MNIST Sudoku Dataset
 
 ```python
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from torchvision.transforms import v2 as transforms
 from srmbench.datasets import MnistSudokuDataset
 from srmbench.evaluations import MnistSudokuEvaluation
 
 # Create dataset
 dataset = MnistSudokuDataset(stage="test")
 
+# Define transform: PIL Image (H, W) -> Tensor (H, W) in [0, 1]
+# Note: ToImage() converts PIL to Tensor, ToDtype with scale=True normalizes [0,255] -> [0,1]
+transform = transforms.Compose([
+    transforms.ToImage(),
+    transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
+    transforms.Lambda(lambda x: x.squeeze(0)),       # Remove channel dimension
+])
+
+# Collate function to handle (image, mask) tuples
+def collate_fn(batch):
+    images = torch.stack([transform(item[0]) for item in batch])
+    masks = [item[1] for item in batch]
+    return images, masks
+
 # Create DataLoader
 dataloader = DataLoader(
     dataset,
     batch_size=8,
     shuffle=False,
-    num_workers=4
+    num_workers=4,
+    collate_fn=collate_fn
 )
-
-# Get a single sample
-image, mask = dataset[0]  # PIL Images (252x252)
 
 # Use with evaluation
 evaluation = MnistSudokuEvaluation()
 
-# Convert PIL images to tensors
-def pil_to_tensor(image):
-    return torch.from_numpy(np.array(image, dtype=np.float32) / 255.0)
-
-# Evaluate a batch (requires tensors in shape: [batch, 252, 252])
+# Evaluate batches
 for images, masks in dataloader:
-    images_tensor = torch.stack([pil_to_tensor(img) for img in images])
-    
-    results = evaluation.evaluate(images_tensor)
+    # Here you can apply the mask and reconstruct using your model.
+    # For example:
+    # images = model(images * masks)
+
+    results = evaluation.evaluate(images)
     # duplicate_count = 0 means valid sudoku (no duplicates)
-    print(f"Valid Sudoku: {results['is_valid_sudoku'].mean():.2%}")
-    print(f"Avg Duplicate Count: {results['duplicate_count'].mean():.2f}")
+    print(f"Valid Sudoku: {results['is_valid_sudoku'].float().mean():.2%}")
+    print(f"Avg Duplicate Count: {results['duplicate_count'].float().mean():.2f}")
 ```
 
 #### 2. Even Pixels Dataset
 
 ```python
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from torchvision.transforms import v2 as transforms
 from srmbench.datasets import EvenPixelsDataset
 from srmbench.evaluations import EvenPixelsEvaluation
 
-# Create dataset with custom parameters
-dataset = EvenPixelsDataset(
-    stage="test",
-    saturation=1.0,
-    value=0.7,
-    num_bins=256
-)
+# Create dataset
+dataset = EvenPixelsDataset(stage="test")
+
+# Define transform: PIL RGB (H, W, 3) -> Tensor (3, H, W) in [-1, 1]
+# Note: ToImage() converts PIL to Tensor, ToDtype with scale=True normalizes [0,255] -> [0,1]
+transform = transforms.Compose([
+    transforms.ToImage(),
+    transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
+    transforms.Lambda(lambda x: x * 2.0 - 1.0),      # Normalize to [-1,1]
+])
+
+# Collate function (dataset returns (image, mask) tuple)
+def collate_fn(batch):
+    images = torch.stack([transform(item[0]) for item in batch])
+    return images
 
 # Create DataLoader
 dataloader = DataLoader(
     dataset,
     batch_size=8,
     shuffle=False,
-    num_workers=4
+    num_workers=4,
+    collate_fn=collate_fn
 )
 
-# Get a single sample
-image, mask = dataset[0]  # PIL RGB Images (256x256)
-
 # Use with evaluation
-evaluation = EvenPixelsEvaluation(num_bins=256)
+evaluation = EvenPixelsEvaluation()
 
-# Convert PIL images to tensors and normalize to [-1, 1]
-def pil_rgb_to_tensor(image):
-    array = np.array(image, dtype=np.float32) / 255.0
-    return torch.from_numpy(array).permute(2, 0, 1) * 2.0 - 1.0
-
-# Evaluate a batch (requires tensors in shape: [batch, 3, 256, 256], range [-1, 1])
-for images, masks in dataloader:
-    images_tensor = torch.stack([pil_rgb_to_tensor(img) for img in images])
-    
-    results = evaluation.evaluate(images_tensor)
+# Evaluate batches
+for images in dataloader:
+    results = evaluation.evaluate(images)
     print(f"Saturation STD: {results['saturation_std']:.4f}")
     print(f"Value STD: {results['value_std']:.4f}")
     print(f"Color Imbalance: {results['color_imbalance_count']:.0f} pixels")
@@ -122,48 +131,46 @@ for images, masks in dataloader:
 #### 3. Counting Objects Dataset
 
 ```python
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from torchvision.transforms import v2 as transforms
 from srmbench.datasets import CountingObjectsFFHQ
-from srmbench.evaluations import CountingPolygonsEvaluation
+from srmbench.evaluations import CountingObjectsEvaluation
 
 # Create dataset (polygons or stars variant)
+# NOTE: Use image_resolution=(128, 128) to match model training resolution
 dataset = CountingObjectsFFHQ(
     stage="test",
     object_variant="polygons",  # or "stars"
     image_resolution=(128, 128),
     are_nums_on_images=True,
-    min_vertices=3,
-    max_vertices=7,
 )
+
+# Define transform: PIL RGB (H, W, 3) -> Tensor (3, H, W) in [-1, 1]
+# Note: ToImage() converts PIL to Tensor, ToDtype with scale=True normalizes [0,255] -> [0,1]
+transform = transforms.Compose([
+    transforms.ToImage(),
+    transforms.ToDtype(torch.float32, scale=True),  # Scales from [0,255] to [0,1]
+    transforms.Lambda(lambda x: x * 2.0 - 1.0),      # Normalize to [-1,1]
+])
 
 # Create DataLoader
 dataloader = DataLoader(
     dataset,
     batch_size=8,
     shuffle=False,
-    num_workers=4
+    num_workers=4,
+    collate_fn=lambda batch: torch.stack([transform(img) for img in batch])
 )
 
-# Get a single sample
-image = dataset[0]  # PIL RGB Image (128x128)
+# Use with evaluation (set device="cpu" if no GPU available)
+evaluation = CountingObjectsEvaluation(object_variant="polygons", device="cpu")
 
-# Use with evaluation
-evaluation = CountingPolygonsEvaluation(object_variant="polygons")
-
-# Convert PIL images to tensors and normalize to [-1, 1]
-def pil_rgb_to_tensor(image):
-    array = np.array(image, dtype=np.float32) / 255.0
-    return torch.from_numpy(array).permute(2, 0, 1) * 2.0 - 1.0
-
-# Evaluate a batch (requires tensors in shape: [batch, 3, 128, 128], range [-1, 1])
+# Evaluate batches
 for images in dataloader:
-    images_tensor = torch.stack([pil_rgb_to_tensor(img) for img in images])
-    
-    results = evaluation.evaluate(images_tensor, include_counts=True)
+    results = evaluation.evaluate(images, include_counts=True)
     print(f"Vertices Uniform: {results['are_vertices_uniform']:.2%}")
-    print(f"Numbers Consistent: {results['are_numbers_and_objects_consistent']:.2%}")
+    print(f"Numbers Match Objects: {results['numbers_match_objects']:.2%}")
 ```
 
 ### Evaluation Metrics
@@ -182,7 +189,7 @@ Each evaluation returns different metrics:
 
 **Counting Objects**:
 - `are_vertices_uniform`: Fraction of images where all objects have the same number of vertices
-- `are_numbers_and_objects_consistent`: Fraction of images where the displayed numbers match the actual object counts (high for dataset images, low for random images)
+- `numbers_match_objects`: Fraction of images where the displayed numbers match the actual object counts (high for dataset images, low for random images)
 - Additional vertex/polygon count distributions (with `include_counts=True`)
 - Confidence scores (with `include_confidences=True`)
 

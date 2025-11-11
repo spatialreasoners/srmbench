@@ -12,7 +12,7 @@ from srmbench.datasets.mnist_sudoku import MnistSudokuDataset
 from srmbench.datasets.counting_objects import CountingObjectsFFHQ
 from srmbench.evaluations.even_pixels_evaluation import EvenPixelsEvaluation
 from srmbench.evaluations.mnist_sudoku_evaluation import MnistSudokuEvaluation
-from srmbench.evaluations.counting_objects_evaluation import CountingPolygonsEvaluation
+from srmbench.evaluations.counting_objects_evaluation import CountingObjectsEvaluation
 
 
 def _pil_to_tensor(image: Image.Image) -> torch.Tensor:
@@ -169,7 +169,7 @@ class CountingObjectsTestIntegration:
             image_resolution=(128, 128),
             are_nums_on_images=True,
         )
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
 
         # Get a sample
         sample = dataset[0]
@@ -182,7 +182,7 @@ class CountingObjectsTestIntegration:
         result = evaluation.evaluate(batch)
 
         assert "are_vertices_uniform" in result
-        assert "are_numbers_and_objects_consistent" in result
+        assert "numbers_match_objects" in result
 
         # All metrics should be scalar tensors
         for key, value in result.items():
@@ -190,15 +190,15 @@ class CountingObjectsTestIntegration:
             assert torch.isfinite(value), f"{key} should be finite"
 
     @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
-    def test_are_numbers_and_objects_consistent_for_dataset_images(self, object_variant):
-        """Test that are_numbers_and_objects_consistent is always true for images from the dataset."""
+    def test_numbers_match_objects_for_dataset_images(self, object_variant):
+        """Test that numbers_match_objects is always true for images from the dataset."""
         dataset = CountingObjectsFFHQ(
             stage="test",
             object_variant=object_variant,
             image_resolution=(128, 128),
             are_nums_on_images=True,
         )
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
 
         # Get a batch of samples from the dataset
         batch_size = 5
@@ -210,30 +210,30 @@ class CountingObjectsTestIntegration:
         batch_tensor = torch.stack(batch_images)
         result = evaluation.evaluate(batch_tensor)
 
-        # For images from the dataset, are_numbers_and_objects_consistent should be high (ideally 1.0)
+        # For images from the dataset, numbers_match_objects should be high (ideally 1.0)
         # The numbers on the image should match the actual counts
-        assert "are_numbers_and_objects_consistent" in result
-        assert result["are_numbers_and_objects_consistent"] > 0.8, (
-            f"are_numbers_and_objects_consistent should be high (>0.8) for dataset images, "
-            f"got {result['are_numbers_and_objects_consistent']}"
+        assert "numbers_match_objects" in result
+        assert result["numbers_match_objects"] > 0.8, (
+            f"numbers_match_objects should be high (>0.8) for dataset images, "
+            f"got {result['numbers_match_objects']}"
         )
 
     @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
-    def test_are_numbers_and_objects_consistent_for_random_images(self, object_variant):
-        """Test that are_numbers_and_objects_consistent is low for random images."""
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+    def test_numbers_match_objects_for_random_images(self, object_variant):
+        """Test that numbers_match_objects is low for random images."""
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
 
         # Create random images
         batch_size = 10
         batch_input = torch.rand(batch_size, 3, 128, 128) * 2.0 - 1.0
         result = evaluation.evaluate(batch_input)
 
-        # For random images, are_numbers_and_objects_consistent should be low
+        # For random images, numbers_match_objects should be low
         # Random images won't have numbers that match the predicted counts
-        assert "are_numbers_and_objects_consistent" in result
-        assert result["are_numbers_and_objects_consistent"] < 0.5, (
-            f"are_numbers_and_objects_consistent should be low (<0.5) for random images, "
-            f"got {result['are_numbers_and_objects_consistent']}"
+        assert "numbers_match_objects" in result
+        assert result["numbers_match_objects"] < 0.5, (
+            f"numbers_match_objects should be low (<0.5) for random images, "
+            f"got {result['numbers_match_objects']}"
         )
 
     @pytest.mark.parametrize("object_variant", ["polygons", "stars"])
@@ -246,7 +246,7 @@ class CountingObjectsTestIntegration:
             image_resolution=(128, 128),
             are_nums_on_images=True,
         )
-        evaluation = CountingPolygonsEvaluation(object_variant=object_variant, device="cpu")
+        evaluation = CountingObjectsEvaluation(object_variant=object_variant, device="cpu")
 
         # Process single sample
         image_0 = dataset[0]

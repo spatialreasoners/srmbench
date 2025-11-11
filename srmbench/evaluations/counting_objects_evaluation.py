@@ -1,14 +1,11 @@
-from functools import cache
-from pathlib import Path
 from typing import Dict, Literal
-from abc import ABC, abstractmethod
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from jaxtyping import Float, Integer, Bool
 from torch import Tensor
-from torchvision.models import resnet18, resnet50
+from torchvision.models import resnet50
 from huggingface_hub import PyTorchModelHubMixin
 
 from srmbench.datasets.counting_objects.labelers import (
@@ -89,7 +86,7 @@ class CountingObjectsClassifier(nn.Module, PyTorchModelHubMixin):
         self.model.eval()
     
 
-class CountingPolygonsEvaluation:
+class CountingObjectsEvaluation:
     repo_ids = {
         "polygons": "BartekPog/counting-polygons-classifier",
         "stars": "BartekPog/counting-stars-classifier",
@@ -164,7 +161,7 @@ class CountingPolygonsEvaluation:
 
         metrics = {"are_vertices_uniform": outputs["is_uniform"],}
 
-        metrics["are_numbers_and_objects_consistent"] = self._are_ambiguous_numbers_consistent(
+        metrics["numbers_match_objects"] = self._are_ambiguous_numbers_consistent(
             outputs["num_polygons_vertices"],
             outputs["num_polygons"],
             outputs["num_vertices"],
