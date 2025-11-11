@@ -256,8 +256,6 @@ transform = transforms.Compose([
 dataset = CountingObjectsFFHQ(
     stage="train",  # or "test"
     object_variant="polygons",  # or "stars"
-    image_resolution=(128, 128),
-    are_nums_on_images=True,
     transform=transform,
 )
 
