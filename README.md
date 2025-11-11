@@ -9,7 +9,7 @@
 
 Benchmark datasets and evaluation metrics for testing the understanding of **complex spatial relationships** in image generative models.
 
-Used in the ICML 2025 paper: [Spatial Reasoning with Denoising Models](https://geometric-rl.mpi-inf.mpg.de/srm/)
+Based on the original implementation from the ICML 2025 paper: [Spatial Reasoning with Denoising Models](https://geometric-rl.mpi-inf.mpg.de/srm/)
 
 **Features:**
 - Three challenging datasets (MNIST Sudoku, Even Pixels, Counting Objects)
