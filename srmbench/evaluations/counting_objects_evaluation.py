@@ -44,7 +44,7 @@ class CountingObjectsClassifier(nn.Module, PyTorchModelHubMixin):
         )
         self.num_classes["numbers_label"] = self.labeler.num_classes
         
-        self.model = resnet50(pretrained=False)
+        self.model = resnet50(weights=None)
         self.model.fc = MultiHeadLayer(self.model.fc.in_features, self.num_classes)
 
         

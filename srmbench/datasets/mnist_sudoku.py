@@ -90,7 +90,7 @@ class MnistSudokuDataset(SRMDataset):
                 # Add the MNIST tensor to the grid of MNIST numbers
                 full_image[j * 28 : (j + 1) * 28, k * 28 : (k + 1) * 28] = mnist_image
 
-        return Image.fromarray(full_image.numpy(), mode="L")
+        return Image.fromarray(full_image.numpy())
 
     def _get_random_masks(
         self, rng: np.random.Generator | None = None
@@ -114,7 +114,7 @@ class MnistSudokuDataset(SRMDataset):
 
         image = self._load_full_image(rng)
         mask = self._get_random_masks(rng)
-        mask_image = Image.fromarray(mask.astype(np.uint8), mode="L")
+        mask_image = Image.fromarray(mask.astype(np.uint8))
 
         return image, mask_image
 
