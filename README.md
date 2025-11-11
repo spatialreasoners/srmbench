@@ -7,14 +7,15 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2502.21075-b31b1b.svg)](https://arxiv.org/abs/2502.21075)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://geometric-rl.mpi-inf.mpg.de/srm/)
 
-Benchmark datasets and evaluation metrics for testing **spatial reasoning** in image generative models.
+Benchmark datasets and evaluation metrics for testing the understanding of **complex spatial relationships** in image generative models.
 
 Used in the ICML 2025 paper: [Spatial Reasoning with Denoising Models](https://geometric-rl.mpi-inf.mpg.de/srm/)
 
 **Features:**
 - Three challenging datasets (MNIST Sudoku, Even Pixels, Counting Objects)
-- Automated evaluation metrics
-- Automatic dataset download from Hugging Face
+- Automated evaluation metrics for each dataset
+- Automatic dataset files and evaluation models download from Hugging Face
+- Each dataset implemented in a lazy, low-data fashion (<3GB for all datasets and evaluationmodels combined)
 
 <p align="center">
   <img src="https://github.com/spatialreasoners/srmbench/blob/main/docs/images/showcase.png?raw=true" alt="SRM Benchmark Datasets" width="100%"/>
